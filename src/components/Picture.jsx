@@ -1,17 +1,27 @@
 import React from "react";
 import PropTypes from "prop-types";
-import picturefill from "picturefill";
 import glamorous from "glamorous";
+
+const canUseDOM = Boolean(
+    typeof window !== "undefined" &&
+    window.document &&
+    window.document.createElement
+);
 
 const Img = glamorous.img();
 
 class Picture extends React.PureComponent {
     componentDidMount() {
-        picturefill();
+        if (canUseDOM) {
+            // c.f. https://github.com/scottjehl/picturefill/pull/556
+            try {
+                require("picturefill")();
+            } catch (e) {} // eslint-disable-line no-empty
+        }
     }
 
     renderSources() {
-        const ieVersion = document.documentMode ? document.documentMode : -1;
+        const ieVersion = (canUseDOM && document.documentMode) ? document.documentMode : -1;
         const { sources } = this.props;
 
         if (sources == null) {
